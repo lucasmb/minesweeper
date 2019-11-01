@@ -22,6 +22,7 @@ window.Vue = require('vue');
 Vue.component('minesweeper', require('./components/Minesweeper.vue').default);
 Vue.component('game-settings', require('./components/GameSettings.vue').default);
 Vue.component('mine-cell', require('./components/MineCell.vue').default);
+Vue.component('ms-timer', require('./components/MsTimer.vue').default);
 
 
 

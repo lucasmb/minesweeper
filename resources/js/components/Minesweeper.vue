@@ -2,29 +2,41 @@
         <div class="row">
             <div class="minesweeper-game">
                 <game-settings :rows="rows" :cols="cols" :mines="mines" @startGame="gameStart"></game-settings>
-                <div  v-if="started" class="board">
-                    <div class="row"  v-for="(row, x) in board" :key="x">
-                        <mine-cell :cell="cell" :gameover="gameover" v-for="(cell, y) in row" :row="x" :key="y"
-                                   @multiReveal="multiReveal"
-                                   @gameOver="finishGame">
-                        </mine-cell>
-                    </div>
 
-                </div>
                 <div class="row">
-                    00:00:00
+                    <div class="card">
+                    <div  v-if="started" class="board">
+                        <div class="row"  v-for="(row, x) in board" :key="x">
+                            <mine-cell :cell="cell" :gameover="gameover" v-for="(cell, y) in row" :row="x" :key="y"
+                                       @multiReveal="multiReveal"
+                                       @gameOver="finishGame">
+                            </mine-cell>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <ms-timer :run="trun" :stopped="tstop"></ms-timer>
                 </div>
             </div>
+
         </div>
+
 </template>
 
 <script>
+    import MineCell from './MineCell.vue';
     import GameSettings from "./GameSettings.vue";
+    import MsTimer from "./MsTimer.vue";
 
     export default {
         name: "minesweeper",
         components: {
             GameSettings,
+            MineCell,
+            MsTimer
+
         },
         data() {
             return {
@@ -34,6 +46,8 @@
                 mines: 10,
                 started: false,
                 gameover:false,
+                trun:false,
+                tstop:true,
             }
         },
 
@@ -50,6 +64,8 @@
                 .then(response => {
                     this.started = true;
                     this.board = response.data.board;
+                    this.trun=true;
+
                 })
                 .catch(error => {
                     console.log(error)
@@ -61,14 +77,20 @@
                 this.mines=data.m;
                 this.board=null;
                 this.gameover=false;
+                this.trun=false;
+                this.tstop=true;
+
             },
             finishGame(){
                 this.gameover=true;
+
                 for(let i=0; i<this.rows; i++) {
                     for (let j = 0; j< this.cols; j++) {
                         this.board[i][j].revealed = true;
                     }
                 }
+                this.tstop = true;
+
             },
             multiReveal(cells){
                 if(cells){
@@ -94,5 +116,7 @@
         width: 40px;
         height: 40px;
         text-align: center;
+        font-size: 12px;
+        font-weight: bold;
     }
 </style>

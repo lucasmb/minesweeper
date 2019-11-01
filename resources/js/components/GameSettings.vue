@@ -1,7 +1,6 @@
 <template>
-    <form>
+    <form class="form-inline">
         <div class="form-row align-items-center">
-        <div class="col-lg-8">
             <div class="form-group ">
                 <label for="rows">Rows</label>
                 <div class="controls">
@@ -36,12 +35,12 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
-            <div class="">
-                <button class="btn btn-lg btn-primary" @click.prevent="$emit('startGame', {r:localRows, c:localCols, m:localMines})">Play</button>
+        <div class="form-group ">
+            <div class="controls">
+            <button class="btn btn-lg btn-primary" @click.prevent="$emit('startGame', {r:localRows, c:localCols, m:localMines})">Play</button>
             </div>
         </div>
-        </div>
+
     </form>
 </template>
 

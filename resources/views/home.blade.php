@@ -15,9 +15,9 @@
             </div>
         </div>
 
-        <div class="row ">
-            <div class="col-md-8">
-                <minesweeper></minesweeper>
+        <div class="row">
+            <div class="col-lg">
+                 <minesweeper></minesweeper>
             </div>
         </div>
 

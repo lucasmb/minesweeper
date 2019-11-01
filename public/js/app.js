@@ -1884,7 +1884,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "GameSettings",
   props: {
@@ -2000,7 +1999,16 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _GameSettings_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./GameSettings.vue */ "./resources/js/components/GameSettings.vue");
+/* harmony import */ var _MineCell_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MineCell.vue */ "./resources/js/components/MineCell.vue");
+/* harmony import */ var _GameSettings_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./GameSettings.vue */ "./resources/js/components/GameSettings.vue");
+/* harmony import */ var _MsTimer_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MsTimer.vue */ "./resources/js/components/MsTimer.vue");
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2022,10 +2030,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "minesweeper",
   components: {
-    GameSettings: _GameSettings_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+    GameSettings: _GameSettings_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    MineCell: _MineCell_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
+    MsTimer: _MsTimer_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
@@ -2034,7 +2046,9 @@ __webpack_require__.r(__webpack_exports__);
       cols: 10,
       mines: 10,
       started: false,
-      gameover: false
+      gameover: false,
+      trun: false,
+      tstop: true
     };
   },
   methods: {
@@ -2051,6 +2065,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         _this.started = true;
         _this.board = response.data.board;
+        _this.trun = true;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -2061,6 +2076,8 @@ __webpack_require__.r(__webpack_exports__);
       this.mines = data.m;
       this.board = null;
       this.gameover = false;
+      this.trun = false;
+      this.tstop = true;
     },
     finishGame: function finishGame() {
       this.gameover = true;
@@ -2070,6 +2087,8 @@ __webpack_require__.r(__webpack_exports__);
           this.board[i][j].revealed = true;
         }
       }
+
+      this.tstop = true;
     },
     multiReveal: function multiReveal(cells) {
       if (cells) {
@@ -2086,6 +2105,108 @@ __webpack_require__.r(__webpack_exports__);
   },
   mounted: function mounted() {
     console.log('Component mounted.');
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MsTimer.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/MsTimer.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: "MsTimer",
+  props: {
+    run: {},
+    stopped: {}
+  },
+  data: function data() {
+    return {
+      time: "00:00:00 0000",
+      timeStopped: false,
+      stoppedDuration: 0,
+      running: false,
+      timeBegan: null,
+      started: 0,
+      minutes: 0,
+      hours: 0
+    };
+  },
+  methods: {
+    start: function start() {
+      console.log('start time');
+      if (this.running) return;
+
+      if (this.timeBegan === null) {
+        this.reset();
+        this.timeBegan = new Date();
+      }
+
+      if (this.timeStopped !== null) {
+        this.stoppedDuration += new Date() - this.timeStopped;
+      }
+
+      this.started = setInterval(this.clockRunning, 10);
+      this.running = true;
+    },
+    stop: function stop() {
+      this.running = false;
+      this.timeStopped = new Date();
+      clearInterval(this.started);
+    },
+    reset: function reset() {
+      this.running = false;
+      clearInterval(this.started);
+      this.stoppedDuration = 0;
+      this.timeBegan = null;
+      this.timeStopped = null;
+      this.time = "00:00:00.000";
+    },
+    clockRunning: function clockRunning() {
+      var currentTime = new Date(),
+          timeElapsed = new Date(currentTime - this.timeBegan - this.stoppedDuration),
+          hour = timeElapsed.getUTCHours(),
+          min = timeElapsed.getUTCMinutes(),
+          sec = timeElapsed.getUTCSeconds(),
+          ms = timeElapsed.getUTCMilliseconds();
+      this.time = this.zeroPrefix(hour, 2) + ":" + this.zeroPrefix(min, 2) + ":" + this.zeroPrefix(sec, 2) + "." + this.zeroPrefix(ms, 3);
+    },
+    zeroPrefix: function zeroPrefix(num, digit) {
+      var zero = '';
+
+      for (var i = 0; i < digit; i++) {
+        zero += '0';
+      }
+
+      return (zero + num).slice(-digit);
+    }
+  },
+  watch: {
+    run: function run(rVal) {
+      if (rVal) {
+        console.log('start: ' + rVal);
+        this.reset();
+        this.start();
+      }
+    },
+    stopped: function stopped(sVal) {
+      if (sVal) {
+        this.stop();
+        console.log('stop: ' + sVal);
+      }
+    }
   }
 });
 
@@ -6548,7 +6669,26 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.cell[data-v-199a30cb]{\n    border: solid 1px black;\n    background: #8aabad;\n    width: 40px;\n    height: 40px;\n    text-align: center;\n}\n", ""]);
+exports.push([module.i, "\n.cell[data-v-199a30cb]{\n    border: solid 1px black;\n    background: #8aabad;\n    width: 40px;\n    height: 40px;\n    text-align: center;\n    font-size: 12px;\n    font-weight: bold;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.timer[data-v-747a1324] {\n    font-size: 20px;\n}\n", ""]);
 
 // exports
 
@@ -37443,6 +37583,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css&":
+/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css& ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/lib/addStyles.js":
 /*!****************************************************!*\
   !*** ./node_modules/style-loader/lib/addStyles.js ***!
@@ -38042,135 +38212,133 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("form", [
+  return _c("form", { staticClass: "form-inline" }, [
     _c("div", { staticClass: "form-row align-items-center" }, [
-      _c("div", { staticClass: "col-lg-8" }, [
-        _c("div", { staticClass: "form-group " }, [
-          _c("label", { attrs: { for: "rows" } }, [_vm._v("Rows")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "controls" }, [
-            _c("div", { staticClass: "input-prepend input-group" }, [
-              _vm._m(0),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model.number",
-                    value: _vm.localRows,
-                    expression: "localRows",
-                    modifiers: { number: true }
-                  }
-                ],
-                attrs: { id: "rows", type: "number", min: "1" },
-                domProps: { value: _vm.localRows },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.localRows = _vm._n($event.target.value)
-                  },
-                  blur: function($event) {
-                    return _vm.$forceUpdate()
-                  }
-                }
-              })
-            ])
-          ])
-        ]),
+      _c("div", { staticClass: "form-group " }, [
+        _c("label", { attrs: { for: "rows" } }, [_vm._v("Rows")]),
         _vm._v(" "),
-        _c("div", { staticClass: "form-group " }, [
-          _c("label", { attrs: { for: "rows" } }, [_vm._v("Cols")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "controls" }, [
-            _c("div", { staticClass: "input-prepend input-group" }, [
-              _vm._m(1),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model.number",
-                    value: _vm.localCols,
-                    expression: "localCols",
-                    modifiers: { number: true }
-                  }
-                ],
-                attrs: { id: "cols", type: "number", min: "1" },
-                domProps: { value: _vm.localCols },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.localCols = _vm._n($event.target.value)
-                  },
-                  blur: function($event) {
-                    return _vm.$forceUpdate()
-                  }
+        _c("div", { staticClass: "controls" }, [
+          _c("div", { staticClass: "input-prepend input-group" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model.number",
+                  value: _vm.localRows,
+                  expression: "localRows",
+                  modifiers: { number: true }
                 }
-              })
-            ])
-          ])
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "form-group " }, [
-          _c("label", { attrs: { for: "rows" } }, [_vm._v("Mines")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "controls" }, [
-            _c("div", { staticClass: "input-prepend input-group" }, [
-              _vm._m(2),
-              _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model.number",
-                    value: _vm.localMines,
-                    expression: "localMines",
-                    modifiers: { number: true }
+              ],
+              attrs: { id: "rows", type: "number", min: "1" },
+              domProps: { value: _vm.localRows },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
                   }
-                ],
-                attrs: { id: "mines", type: "number", min: "1" },
-                domProps: { value: _vm.localMines },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
-                    }
-                    _vm.localMines = _vm._n($event.target.value)
-                  },
-                  blur: function($event) {
-                    return _vm.$forceUpdate()
-                  }
+                  _vm.localRows = _vm._n($event.target.value)
+                },
+                blur: function($event) {
+                  return _vm.$forceUpdate()
                 }
-              })
-            ])
+              }
+            })
           ])
         ])
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "col-lg-4" }, [
-        _c("div", {}, [
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-lg btn-primary",
+      _c("div", { staticClass: "form-group " }, [
+        _c("label", { attrs: { for: "rows" } }, [_vm._v("Cols")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "controls" }, [
+          _c("div", { staticClass: "input-prepend input-group" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model.number",
+                  value: _vm.localCols,
+                  expression: "localCols",
+                  modifiers: { number: true }
+                }
+              ],
+              attrs: { id: "cols", type: "number", min: "1" },
+              domProps: { value: _vm.localCols },
               on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return _vm.$emit("startGame", {
-                    r: _vm.localRows,
-                    c: _vm.localCols,
-                    m: _vm.localMines
-                  })
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.localCols = _vm._n($event.target.value)
+                },
+                blur: function($event) {
+                  return _vm.$forceUpdate()
                 }
               }
-            },
-            [_vm._v("Play")]
-          )
+            })
+          ])
         ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "form-group " }, [
+        _c("label", { attrs: { for: "rows" } }, [_vm._v("Mines")]),
+        _vm._v(" "),
+        _c("div", { staticClass: "controls" }, [
+          _c("div", { staticClass: "input-prepend input-group" }, [
+            _vm._m(2),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model.number",
+                  value: _vm.localMines,
+                  expression: "localMines",
+                  modifiers: { number: true }
+                }
+              ],
+              attrs: { id: "mines", type: "number", min: "1" },
+              domProps: { value: _vm.localMines },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.localMines = _vm._n($event.target.value)
+                },
+                blur: function($event) {
+                  return _vm.$forceUpdate()
+                }
+              }
+            })
+          ])
+        ])
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "form-group " }, [
+      _c("div", { staticClass: "controls" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-lg btn-primary",
+            on: {
+              click: function($event) {
+                $event.preventDefault()
+                return _vm.$emit("startGame", {
+                  r: _vm.localRows,
+                  c: _vm.localCols,
+                  m: _vm.localMines
+                })
+              }
+            }
+          },
+          [_vm._v("Play")]
+        )
       ])
     ])
   ])
@@ -38288,37 +38456,70 @@ var render = function() {
           on: { startGame: _vm.gameStart }
         }),
         _vm._v(" "),
-        _vm.started
-          ? _c(
-              "div",
-              { staticClass: "board" },
-              _vm._l(_vm.board, function(row, x) {
-                return _c(
-                  "div",
-                  { key: x, staticClass: "row" },
-                  _vm._l(row, function(cell, y) {
-                    return _c("mine-cell", {
-                      key: y,
-                      attrs: { cell: cell, gameover: _vm.gameover, row: x },
-                      on: {
-                        multiReveal: _vm.multiReveal,
-                        gameOver: _vm.finishGame
-                      }
-                    })
-                  }),
-                  1
-                )
-              }),
-              0
-            )
-          : _vm._e(),
-        _vm._v(" "),
         _c("div", { staticClass: "row" }, [
-          _vm._v("\n            00:00:00\n        ")
-        ])
+          _c("div", { staticClass: "card" }, [
+            _vm.started
+              ? _c(
+                  "div",
+                  { staticClass: "board" },
+                  _vm._l(_vm.board, function(row, x) {
+                    return _c(
+                      "div",
+                      { key: x, staticClass: "row" },
+                      _vm._l(row, function(cell, y) {
+                        return _c("mine-cell", {
+                          key: y,
+                          attrs: { cell: cell, gameover: _vm.gameover, row: x },
+                          on: {
+                            multiReveal: _vm.multiReveal,
+                            gameOver: _vm.finishGame
+                          }
+                        })
+                      }),
+                      1
+                    )
+                  }),
+                  0
+                )
+              : _vm._e()
+          ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "row" },
+          [_c("ms-timer", { attrs: { run: _vm.trun, stopped: _vm.tstop } })],
+          1
+        )
       ],
       1
     )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MsTimer.vue?vue&type=template&id=747a1324&scoped=true&":
+/*!**********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/MsTimer.vue?vue&type=template&id=747a1324&scoped=true& ***!
+  \**********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "row" }, [
+    _c("span", { staticClass: "timer" }, [_vm._v(" " + _vm._s(_vm.time))])
   ])
 }
 var staticRenderFns = []
@@ -50492,6 +50693,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 Vue.component('minesweeper', __webpack_require__(/*! ./components/Minesweeper.vue */ "./resources/js/components/Minesweeper.vue")["default"]);
 Vue.component('game-settings', __webpack_require__(/*! ./components/GameSettings.vue */ "./resources/js/components/GameSettings.vue")["default"]);
 Vue.component('mine-cell', __webpack_require__(/*! ./components/MineCell.vue */ "./resources/js/components/MineCell.vue")["default"]);
+Vue.component('ms-timer', __webpack_require__(/*! ./components/MsTimer.vue */ "./resources/js/components/MsTimer.vue")["default"]);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -50783,6 +50985,93 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Minesweeper_vue_vue_type_template_id_199a30cb_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Minesweeper_vue_vue_type_template_id_199a30cb_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/MsTimer.vue":
+/*!*********************************************!*\
+  !*** ./resources/js/components/MsTimer.vue ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _MsTimer_vue_vue_type_template_id_747a1324_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MsTimer.vue?vue&type=template&id=747a1324&scoped=true& */ "./resources/js/components/MsTimer.vue?vue&type=template&id=747a1324&scoped=true&");
+/* harmony import */ var _MsTimer_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MsTimer.vue?vue&type=script&lang=js& */ "./resources/js/components/MsTimer.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _MsTimer_vue_vue_type_style_index_0_id_747a1324_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css& */ "./resources/js/components/MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _MsTimer_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _MsTimer_vue_vue_type_template_id_747a1324_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _MsTimer_vue_vue_type_template_id_747a1324_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "747a1324",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/MsTimer.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/MsTimer.vue?vue&type=script&lang=js&":
+/*!**********************************************************************!*\
+  !*** ./resources/js/components/MsTimer.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./MsTimer.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MsTimer.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css&":
+/*!******************************************************************************************************!*\
+  !*** ./resources/js/components/MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css& ***!
+  \******************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_style_index_0_id_747a1324_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MsTimer.vue?vue&type=style&index=0&id=747a1324&scoped=true&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_style_index_0_id_747a1324_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_style_index_0_id_747a1324_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_style_index_0_id_747a1324_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_style_index_0_id_747a1324_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_style_index_0_id_747a1324_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/MsTimer.vue?vue&type=template&id=747a1324&scoped=true&":
+/*!****************************************************************************************!*\
+  !*** ./resources/js/components/MsTimer.vue?vue&type=template&id=747a1324&scoped=true& ***!
+  \****************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_template_id_747a1324_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./MsTimer.vue?vue&type=template&id=747a1324&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/MsTimer.vue?vue&type=template&id=747a1324&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_template_id_747a1324_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_MsTimer_vue_vue_type_template_id_747a1324_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
