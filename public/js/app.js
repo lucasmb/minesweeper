@@ -1937,12 +1937,35 @@ __webpack_require__.r(__webpack_exports__);
       rows: 10,
       cols: 10,
       mines: 10,
-      start: false,
+      started: false,
       gameover: false
     };
   },
-  gameStart: function gameStart(data) {
-    this.start = true;
+  methods: {
+    gameStart: function gameStart(data) {
+      var _this = this;
+
+      this.update(data);
+      axios.get('/api/game/init', {
+        params: {
+          rows: rows.value,
+          cols: cols.value,
+          mines: mines.value
+        }
+      }).then(function (response) {
+        _this.started = true;
+        _this.board = response.data.board;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    update: function update(data) {
+      this.rows = data.r;
+      this.cols = data.c;
+      this.mines = data.m;
+      this.board = null;
+      this.gameover = false;
+    }
   },
   mounted: function mounted() {
     console.log('Component mounted.');
@@ -37374,6 +37397,7 @@ var render = function() {
               staticClass: "btn btn-lg btn-primary",
               on: {
                 click: function($event) {
+                  $event.preventDefault()
                   return _vm.$emit("startGame", {
                     r: _vm.localRows,
                     c: _vm.localCols,
@@ -37446,7 +37470,7 @@ var render = function() {
           on: { startGame: _vm.gameStart }
         }),
         _vm._v(" "),
-        _vm.start
+        _vm.started
           ? _c("div", { staticClass: "board" }, [
               _vm._v("\n            BOARD\n        ")
             ])
@@ -49672,7 +49696,21 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
  * for events that are broadcast by Laravel. Echo and event broadcasting
  * allows your team to easily build robust real-time web applications.
  */
-// import Echo from 'laravel-echo';
+
+var token = document.head.querySelector('meta[name="csrf-token"]');
+var api_token = document.head.querySelector('meta[name="app-token"]');
+
+if (token) {
+  window.axios.defaults.headers.common['X-CSRF-TOKEN'] = token.content;
+} else {
+  console.error('CSRF token not found: https://laravel.com/docs/csrf#csrf-x-csrf-token');
+}
+
+if (api_token) {
+  window.axios.defaults.headers.common['Authorization'] = 'Bearer ' + api_token.content;
+} else {
+  console.error('api token not found');
+} // import Echo from 'laravel-echo';
 // window.Pusher = require('pusher-js');
 // window.Echo = new Echo({
 //     broadcaster: 'pusher',

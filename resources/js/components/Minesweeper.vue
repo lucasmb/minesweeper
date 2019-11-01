@@ -2,7 +2,7 @@
         <div class="row">
             <div class="minesweeper-game">
                 <game-settings :rows="rows" :cols="cols" :mines="mines" @startGame="gameStart"></game-settings>
-                <div  v-if="start" class="board">
+                <div  v-if="started" class="board">
                     BOARD
                 </div>
             </div>
@@ -23,12 +23,37 @@
                 rows: 10,
                 cols: 10,
                 mines: 10,
-                start: false,
+                started: false,
                 gameover:false,
             }
         },
-        gameStart(data){
-            this.start = true;
+
+        methods: {
+            gameStart(data){
+                this.update(data)
+                axios.get('/api/game/init', {
+                    params: {
+                        rows: rows.value,
+                        cols: cols.value,
+                        mines: mines.value
+                    },
+                })
+                .then(response => {
+                    this.started = true;
+                    this.board = response.data.board;
+                })
+                .catch(error => {
+                    console.log(error)
+                });
+            },
+            update(data){
+                this.rows=data.r;
+                this.cols=data.c;
+                this.mines=data.m;
+                this.board=null;
+                this.gameover=false;
+
+            },
         },
         mounted() {
             console.log('Component mounted.')

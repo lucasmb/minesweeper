@@ -38,7 +38,7 @@
         </div>
         <div class="col-lg-4">
             <div class="">
-                <button class="btn btn-lg btn-primary" v-on:click="$emit('startGame', {r:localRows, c:localCols, m:localMines})">Play</button>
+                <button class="btn btn-lg btn-primary" @click.prevent="$emit('startGame', {r:localRows, c:localCols, m:localMines})">Play</button>
             </div>
         </div>
         </div>
