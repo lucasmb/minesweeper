@@ -42,7 +42,6 @@ class MineSweeperController extends Controller
         $x = $request->input('x');
         $y = $request->input('y');
         $auto = array();
-        // $this->getBoard();
 
         // Game over check
         if ($this->game_over)
@@ -201,6 +200,9 @@ class MineSweeperController extends Controller
     }
 
     private function getBoard(){
+        if (empty($this->board) && Cache::has('board') ) {
+            $this->board=Cache::get('board');
+        }
         return $this->board;
     }
 

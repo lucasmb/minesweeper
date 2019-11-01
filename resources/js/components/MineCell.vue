@@ -33,29 +33,22 @@
                         x: this.celldata.x,
                         y: this.celldata.y,
                     })
-                        .then(response => {
-                            //  let cellb = this.board[x][y];
+                    .then(response => {
                             if (response.status == 200) {
-
                                 if (response.data.autoreveal) {
-                                    alert(response.data.autoreveal);
                                     this.$emit('multiReveal', response.data.autoreveal);
-
                                     return;
                                 }
                                 console.log('cell');
-                                console.log(cell);
-                                console.log(response);
                                 this.celldata = response.data.celldata;
-                                cell = response.data;
+                               // cell = response.data;
                             }
                             if (response.status == 201) {
                                 alert('Game OVer');
                                 this.$emit('gameOver');
                             }
-
-                            // this.board[x][y] = response.data;
-                        }).catch(error => {
+                    })
+                    .catch(error => {
                         console.log(error)
                     });
                 }
@@ -65,12 +58,11 @@
                     x: this.celldata.x,
                     y: this.celldata.y,
                 })
-                    .then(response => {
+                .then(response => {
                         if (response.status == 200) {
                             this.celldata = response.data;
-                            //cell = response.data;
                         }
-                    }).catch(error => {
+                }).catch(error => {
                     console.log(error)
                 });
             },
